@@ -7,6 +7,13 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    type: {
+      validator: (value: string) => {
+        // 这个值必须与下列字符串中的其中一个相匹配
+        return ["text", "password", "textarea", "number"].includes(value);
+      },
+      default: "text",
+    },
   },
   emits: ["update:modelValue"],
   setup(props, ctx) {
@@ -20,8 +27,8 @@ export default defineComponent({
       return (
         <div class="snow-field-wrap">
           <input
-            type="text"
             class="snow-field"
+            type={props.type}
             placeholder={ctx.attrs.placeholder as string}
             value={props.modelValue}
             onInput={OnInput}
