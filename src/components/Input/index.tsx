@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-
+import "./index.scss";
 export default defineComponent({
   name: "AInput",
   props: {
@@ -25,9 +25,9 @@ export default defineComponent({
     };
     return () => {
       return (
-        <div class="snow-field-wrap">
+        <div class="ant-field-wrap">
           <input
-            class="snow-field"
+            class="ant-field"
             type={props.type}
             placeholder={ctx.attrs.placeholder as string}
             value={props.modelValue}

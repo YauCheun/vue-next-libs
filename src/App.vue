@@ -1,16 +1,18 @@
 <template>
   <div class="contianer">
-    <demo-input />
+    <demo-from />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import demoInput from "./components/Input/demo.vue";
+// import demoInput from "./components/Input/demo.vue";
+import demoFrom from "./components/From/demo.vue";
 export default defineComponent({
   name: "App",
   components: {
-    demoInput,
+    // demoInput,
+    demoFrom,
   },
 });
 </script>
