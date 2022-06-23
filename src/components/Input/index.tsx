@@ -1,5 +1,6 @@
-import { defineComponent } from "vue";
+import { defineComponent, inject } from "vue";
 import "./index.scss";
+import { FormItemKey, FormItemContent } from "../From/types";
 export default defineComponent({
   name: "AInput",
   props: {
@@ -17,11 +18,16 @@ export default defineComponent({
   },
   emits: ["update:modelValue"],
   setup(props, ctx) {
+    const FormItemCtx = inject<FormItemContent>(FormItemKey);
     const OnInput = (event: Event) => {
       const value = (event.target as HTMLInputElement).value;
       if (value !== props.modelValue) {
         ctx.emit("update:modelValue", value);
+        FormItemCtx?.handleControlChange(value);
       }
+    };
+    const OnBlur = () => {
+      FormItemCtx?.handleControlBlur(props.modelValue);
     };
     return () => {
       return (
@@ -32,6 +38,7 @@ export default defineComponent({
             placeholder={ctx.attrs.placeholder as string}
             value={props.modelValue}
             onInput={OnInput}
+            onBlur={OnBlur}
           />
         </div>
       );
