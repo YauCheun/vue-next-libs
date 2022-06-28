@@ -1,6 +1,12 @@
-import { defineComponent, ref, provide, PropType } from "vue";
-import Schema, { RuleItem } from "async-validator";
-import { AntRuleItem, FormItemKey, trigger } from "./types";
+import { defineComponent, ref, provide, PropType, inject } from "vue";
+import Schema, { RuleItem, ValidateError } from "async-validator";
+import {
+  AntRuleItem,
+  FormItemKey,
+  trigger,
+  FormContent,
+  FormKey,
+} from "./types";
 import "./index.scss";
 export default defineComponent({
   name: "AFormItem",
@@ -17,23 +23,28 @@ export default defineComponent({
       type: String,
       default: "",
     },
-    rules: {
-      type: [Object, Array] as PropType<AntRuleItem | AntRuleItem[]>,
-      default: () => [],
-    },
+    rules: [Object, Array] as PropType<AntRuleItem | AntRuleItem[]>,
   },
   emits: ["update:modelValue"],
   setup(props, ctx) {
     const errMsg = ref("");
+    const parent = inject<FormContent>(FormKey);
     const getRules = (trigger: trigger): AntRuleItem[] => {
-      const rules = Array.isArray(props.rules) ? props.rules : [props.rules];
-      const trueRules = rules.filter((item) => {
-        const Trigger = item?.trigger || "change";
-        return Trigger !== trigger;
-      });
-      return trueRules;
+      const rules = props.rules || parent?.rules[props.prop];
+      if (rules) {
+        const rulesArr = Array.isArray(rules) ? rules : [rules];
+        const trueRules = rulesArr.filter((item) => {
+          const Trigger = item?.trigger || "change";
+          return Trigger !== trigger;
+        });
+        return trueRules;
+      }
+      return [];
     };
-    const validate = (value: string, trueRule: AntRuleItem[]): Promise<any> => {
+    const validate = (
+      value: string,
+      trueRule: AntRuleItem[]
+    ): Promise<boolean | ValidateError> => {
       // console.log(rules);
       if (trueRule && props.prop) {
         const schema = new Schema({ [props.prop]: trueRule });
