@@ -39,19 +39,26 @@ export default defineComponent({
         formItem
           .filter((item) => item.prop)
           .map((item) => item!.validate!(props.model[item.prop!]))
-      )
-        .then(() => {
+      ).then((res) => {
+        if (res.some((i) => i !== true)) {
+          if (callback) {
+            callback(false);
+          }
+          return Promise.reject(res.find((i) => i !== true));
+        } else {
           if (callback) {
             callback(true);
           }
           return Promise.resolve(true);
-        })
-        .catch((errors) => {
-          if (callback) {
-            callback(false);
-          }
-          return Promise.reject(false);
-        });
+        }
+      });
+      // .catch((errors) => {
+      //   console.log(errors);
+      //   if (callback) {
+      //     callback(false);
+      //   }
+      //   return Promise.reject(errors);
+      // });
     };
     provide<Partial<FormContent>>(FormKey, {
       model: props.model,

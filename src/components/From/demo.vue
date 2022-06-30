@@ -10,7 +10,7 @@
         placeholder="请输入姓名"
       ></a-input>
     </a-form-item>
-    <a-form-item label="密码" prop="password">
+    <a-form-item label="密码">
       <button @click="submit">提交</button>
     </a-form-item>
   </a-form>
@@ -24,13 +24,13 @@ export default defineComponent({
   name: "demoFrom",
   setup(props, { emit }) {
     const form = reactive({
-      name: "2323",
-      password: "123",
+      name: "232q3",
+      password: "123asasasas",
     });
     const myForm = ref<FormContent | null>(null);
     const submit = () => {
       // myForm.value.validate();
-      myForm.value!.validate((valid: boolean) => {
+      myForm.value?.validate((valid: boolean) => {
         console.log(valid);
       });
     };
