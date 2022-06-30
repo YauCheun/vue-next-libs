@@ -4,6 +4,9 @@ import { RuleItem, ValidateError } from "async-validator";
 const FormItemKey = "FromItemKey";
 const FormKey = "FromKey";
 interface FormItemContent {
+  id: string;
+  prop: string;
+  validate: (value: string) => Promise<boolean | ValidateError>;
   handleControlChange(value: string): void;
   handleControlBlur(value: string): void;
 }
@@ -22,6 +25,8 @@ interface FormContent {
   model: Record<string, any>;
   rules: AntRuleForm;
   validate: validateFunc;
+  addItem: (item: Partial<FormItemContent>) => void;
+  removeItem: (id: string) => void;
 }
 
 export {

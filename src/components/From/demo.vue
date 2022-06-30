@@ -1,5 +1,5 @@
 <template>
-  <a-form :modal="form" :rules="formRules" ref="myForm">
+  <a-form :model="form" :rules="formRules" ref="myForm">
     <a-form-item label="姓名" prop="name">
       <a-input v-model="form.name" placeholder="请输入姓名"></a-input>
     </a-form-item>
@@ -18,8 +18,8 @@
 
 <script lang="ts">
 // import { RuleItem } from "async-validator";
-import { defineComponent, reactive, ref } from "vue";
-import { AntRuleItem, AntRuleForm, validateFunc } from "./types";
+import { defineComponent, onMounted, reactive, ref } from "vue";
+import { AntRuleItem, AntRuleForm, validateFunc, FormContent } from "./types";
 export default defineComponent({
   name: "demoFrom",
   setup(props, { emit }) {
@@ -27,9 +27,12 @@ export default defineComponent({
       name: "2323",
       password: "123",
     });
-    const myForm = ref<validateFunc | null>(null);
+    const myForm = ref<FormContent | null>(null);
     const submit = () => {
-      // myForm.value.val;
+      // myForm.value.validate();
+      myForm.value!.validate((valid: boolean) => {
+        console.log(valid);
+      });
     };
     const nameRules = ref<AntRuleItem[]>([
       {
@@ -71,6 +74,7 @@ export default defineComponent({
       nameRules,
       formRules,
       submit,
+      myForm,
     };
   },
 });

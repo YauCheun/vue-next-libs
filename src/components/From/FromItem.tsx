@@ -1,4 +1,12 @@
-import { defineComponent, ref, provide, PropType, inject } from "vue";
+import {
+  defineComponent,
+  ref,
+  provide,
+  PropType,
+  inject,
+  onMounted,
+  onUnmounted,
+} from "vue";
 import Schema, { RuleItem, ValidateError } from "async-validator";
 import {
   AntRuleItem,
@@ -6,8 +14,13 @@ import {
   trigger,
   FormContent,
   FormKey,
+  FormItemContent,
 } from "./types";
 import "./index.scss";
+let id = 0;
+function generateId(): string {
+  return "form-item-" + id++;
+}
 export default defineComponent({
   name: "AFormItem",
   props: {
@@ -27,26 +40,41 @@ export default defineComponent({
   },
   emits: ["update:modelValue"],
   setup(props, ctx) {
+    const current = generateId();
     const errMsg = ref("");
     const parent = inject<FormContent>(FormKey);
-    const getRules = (trigger: trigger): AntRuleItem[] => {
+    onMounted(() => {
+      parent?.addItem({
+        id: current,
+        prop: props.prop,
+        validate,
+      });
+    });
+    onUnmounted(() => {
+      parent?.removeItem(current);
+    });
+    const getRules = (trigger?: trigger): AntRuleItem[] => {
       const rules = props.rules || parent?.rules[props.prop];
       if (rules) {
         const rulesArr = Array.isArray(rules) ? rules : [rules];
-        const trueRules = rulesArr.filter((item) => {
-          const Trigger = item?.trigger || "change";
-          return Trigger !== trigger;
-        });
-        return trueRules;
+        if (trigger) {
+          const trueRules = rulesArr.filter((item) => {
+            const Trigger = item?.trigger || "change";
+            return Trigger !== trigger;
+          });
+          return trueRules;
+        }
+        return rulesArr;
       }
       return [];
     };
     const validate = (
       value: string,
-      trueRule: AntRuleItem[]
+      rules?: AntRuleItem[]
     ): Promise<boolean | ValidateError> => {
       // console.log(rules);
-      if (trueRule && props.prop) {
+      const trueRule = rules || getRules();
+      if (trueRule.length && props.prop) {
         const schema = new Schema({ [props.prop]: trueRule });
         return schema
           .validate({ [props.prop]: value })
@@ -74,7 +102,7 @@ export default defineComponent({
         validate(value, trueRule);
       }
     };
-    provide(FormItemKey, {
+    provide<Partial<FormItemContent>>(FormItemKey, {
       handleControlChange,
       handleControlBlur,
     });
