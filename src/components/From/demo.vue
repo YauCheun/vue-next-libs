@@ -1,5 +1,10 @@
 <template>
-  <a-form :model="form" :rules="formRules" ref="myForm">
+  <a-form
+    :model="form"
+    :rules="formRules"
+    ref="myForm"
+    @validate="handleValidate"
+  >
     <a-form-item label="姓名" prop="name">
       <a-input v-model="form.name" placeholder="请输入姓名"></a-input>
     </a-form-item>
@@ -11,7 +16,7 @@
       ></a-input>
     </a-form-item>
     <a-form-item label="密码">
-      <button @click="submit">提交</button>
+      <button>提交</button>
     </a-form-item>
   </a-form>
 </template>
@@ -69,12 +74,16 @@ export default defineComponent({
         },
       ],
     });
+    const handleValidate = (valid: boolean) => {
+      console.log(valid);
+    };
     return {
       form,
       nameRules,
       formRules,
       submit,
       myForm,
+      handleValidate,
     };
   },
 });

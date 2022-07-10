@@ -19,6 +19,7 @@ export default defineComponent({
     },
     rules: Object as PropType<AntRuleForm>,
   },
+  emits: ["validate"],
   setup(props, ctx) {
     const formItem: Partial<FormItemContent>[] = [];
     const addItem = (item: Partial<FormItemContent>): void => {
@@ -44,11 +45,13 @@ export default defineComponent({
           if (callback) {
             callback(false);
           }
+          ctx.emit("validate", false);
           return Promise.reject(res.find((i) => i !== true));
         } else {
           if (callback) {
             callback(true);
           }
+          ctx.emit("validate", true);
           return Promise.resolve(true);
         }
       });
@@ -66,10 +69,19 @@ export default defineComponent({
       addItem,
       removeItem,
     });
+    const onSubmit = (event: Event) => {
+      event.preventDefault();
+      console.log(1);
+      validate();
+    };
     // ctx.expose({ validate });
     useExpose<{ validate: validateFunc }>({ validate });
     return () => {
-      return <div class="ant-form">{ctx.slots.default!()}</div>;
+      return (
+        <form class="ant-form" onSubmit={onSubmit}>
+          {ctx.slots.default!()}
+        </form>
+      );
     };
   },
 });
